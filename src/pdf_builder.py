@@ -11,21 +11,13 @@ from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH
 
 def create_start():
     styles = {
-        'Title': ParagraphStyle(
-            name='Title',
+        'Medium': ParagraphStyle(
+            name='Medium',
             fontName='MyFont',
-            fontSize=14,   # 大号字
+            fontSize=12,   # 大号字
             leading=20,    # 行高
             spaceAfter=12, # 段落后间距
             alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
-        ),
-        'Body': ParagraphStyle(
-            name='Body',
-            fontName='MyFont',
-            fontSize=10,   # 中号字 (默认)
-            leading=16,
-            spaceAfter=8,
-            alignment=0,
         ),
         'Small': ParagraphStyle(
             name='Small',
@@ -33,21 +25,22 @@ def create_start():
             fontSize=8,    # 小号字
             leading=12,
             spaceAfter=6,
-            textColor=colors.grey, # 灰色文字
-            alignment=0,
+            textColor=colors.black, 
+            alignment=2,
         )
     }
 
     header_texts = [
-        ('编号: 2026061200085004702499331705700040431614', "Title"),
-        ('支付宝支付科技有限公司 交易流水证明', "Title"),
-        ('兹证明:周杰伦(证件号码:21090219830118xxxx)在其支付宝账号15831490000中明细信息如下', "Title")
+        ('编号: 2026061200085004702499331705700040431614', "Small"),
+        ('支付宝支付科技有限公司 交易流水证明', "Medium"),
+        ('兹证明:周杰伦(证件号码:21090219830118xxxx)在其支付宝账号15831490000中明细信息如下', "Small"),
+        ('币种：人民币 / 单位：元', "Medium"),
     ]
 
     elements = []
     for text, style_name in header_texts:
         # 检查样式是否存在，不存在则使用默认 Body 样式
-        para_style = styles.get(style_name, styles['Body'])
+        para_style = styles.get(style_name, styles['Small'])
         para = Paragraph(text, para_style)
         elements.append(para)
     # 可以在头部文字和表格之间加一个大间距
@@ -57,21 +50,21 @@ def create_start():
 
 def create_end():
     styles = {
-        'Title': ParagraphStyle(
-            name='Title',
+        'Large': ParagraphStyle(
+            name='Large',
             fontName='MyFont',
-            fontSize=14,   # 大号字
+            fontSize=15,   # 大号字
             leading=20,    # 行高
             spaceAfter=12, # 段落后间距
             alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
         ),
-        'Body': ParagraphStyle(
-            name='Body',
+        'Medium': ParagraphStyle(
+            name='Medium',
             fontName='MyFont',
-            fontSize=10,   # 中号字 (默认)
-            leading=16,
-            spaceAfter=8,
-            alignment=0,
+            fontSize=12,   # 大号字
+            leading=20,    # 行高
+            spaceAfter=12, # 段落后间距
+            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
         ),
         'Small': ParagraphStyle(
             name='Small',
@@ -79,22 +72,22 @@ def create_end():
             fontSize=8,    # 小号字
             leading=12,
             spaceAfter=6,
-            textColor=colors.grey, # 灰色文字
-            alignment=0,
+            textColor=colors.black, 
+            alignment=2,
         )
     }
 
     elements = []
 
     end_texts = [
-        ("这是第一行文字。<br/>这是第二行文字。<br/>这是第三行。", "body"),
-        ("支付宝支付科技有限公司", "body"),
-        ("业务凭证专用章盖章处", "body")
+        ("这是第一行文字。<br/>这是第二行文字。<br/>这是第三行。", "Small"),
+        ("支付宝支付科技有限公司", "Large"),
+        ("业务凭证专用章盖章处", "Medium")
     ]
 
     for text, style_name in end_texts:
         # 检查样式是否存在，不存在则使用默认 Body 样式
-        para_style = styles.get(style_name, styles['Body'])
+        para_style = styles.get(style_name)
         para = Paragraph(text, para_style)
         elements.append(para)
     # 可以在头部文字和表格之间加一个大间距
@@ -120,16 +113,16 @@ class PdfBuilder:
         """定义表格样式"""
         style = TableStyle([
             ('FONTNAME', (0, 0), (-1, -1), 'MyFont'), # 全局使用注册的中文字体
-            ('FONTSIZE', (0, 0), (-1, -1), TABLE_CONFIG['font_size']),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),   # 垂直居中
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),      # 水平左对齐
-            ('TOPPADDING', (0, 0), (-1, -1), 6),      # 上内边距
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),   # 下内边距
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey), # 网格线
+            ('TOPPADDING', (0, 0), (-1, -1), 2),      # 上内边距
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),   # 下内边距
+            ('GRID', (0, 0), (-1, -1), 0.6, colors.black), # 网格线
             # 表头样式
-            ('BACKGROUND', (0, 0), (-1, 0), TABLE_CONFIG['header_bg']),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('FONTNAME', (0, 0), (-1, 0), 'MyFont'),
+            # ('BACKGROUND', (0, 0), (-1, 0), TABLE_CONFIG['header_bg']),
+            # ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            # ('FONTNAME', (0, 0), (-1, 0), 'MyFont'),
         ])
         return style
 
@@ -152,8 +145,8 @@ class PdfBuilder:
         p_style = ParagraphStyle(
             name='Normal',
             fontName='MyFont',
-            fontSize=TABLE_CONFIG['font_size'],
-            leading=TABLE_CONFIG['line_height'], # 行高
+            fontSize=8,
+            leading=8, # 行高
             wordWrap='CJK' # 关键：开启中日韩自动换行
         )
 

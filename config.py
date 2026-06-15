@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # --- 1. 路径配置 ---
 # 数据文件路径
-EXCEL_PATH = os.path.join(BASE_DIR, "assets","data", "orders.xlsx")
+EXCEL_PATH = os.path.join(BASE_DIR, "assets","data", "11.xlsx")
 
 # 输出文件路径
 OUTPUT_PDF_PATH = os.path.join(BASE_DIR, "output_report.pdf")
@@ -22,8 +22,6 @@ FONT_PATH = os.path.join(BASE_DIR, "assets", "fonts", "SimSun.ttf")
 
 # --- 3. 表格样式配置 ---
 TABLE_CONFIG = {
-    "col_widths": [5*cm, 8*cm, 4*cm],  # 列宽：序号、商品名、价格
+    "col_widths": [1.13*cm, 2.26*cm, 2.26*cm, 1.7*cm, 3.957*cm, 3.957*cm, 2.26*cm],  # 列宽：序号、商品名、价格
     "header_bg": colors.HexColor('#4F81BD'), # 表头背景色
-    "font_size": 10,
-    "line_height": 14,
 }

@@ -6,23 +6,22 @@ def read_order_data():
     读取 Excel 数据并转换为 ReportLab 需要的格式
     """
     try:
-        df = pd.read_excel(EXCEL_PATH)
-        print(f"成功读取 {len(df)} 条数据")
+        # header=None 确保第一行被当作数据处理
+        df = pd.read_excel(EXCEL_PATH, header=None)
 
-        # 定义表头
-        headers = ["序号", "商品描述", "单价"]
-        table_data = [headers]
+        # 【关键】axis=1 表示按列操作，how='all' 表示整列都是 NaN 才删除
+        # 这样可以去除 Excel 中那些看不见的空白列
+        df = df.dropna(axis=1, how='all')
 
-        # 遍历数据行
-        for index, row in df.iterrows():
-            # 将每一行转换为列表，index+1 作为序号
-            table_data.append([
-                str(index + 1),
-                str(row.get('商品名称', '')), # 假设Excel列名叫'商品名称'
-                f"¥{row.get('价格', 0):.2f}"
-            ])
+        table_data = df.values.tolist()
 
-        return table_data
+        # 清洗剩余的单元格内的 NaN 为空字符串
+        cleaned_data = []
+        for row in table_data:
+            new_row = ["" if pd.isna(cell) else str(cell) for cell in row]
+            cleaned_data.append(new_row)
+
+        return cleaned_data
 
     except FileNotFoundError:
         print(f"错误：找不到文件 {EXCEL_PATH}")
