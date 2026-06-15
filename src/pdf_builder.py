@@ -1,0 +1,89 @@
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH
+
+class PdfBuilder:
+    def __init__(self):
+        self._register_font()
+
+    def _register_font(self):
+        """注册中文字体"""
+        try:
+            # 这里的 'MyFont' 是我们在代码里引用的名字
+            pdfmetrics.registerFont(TTFont('MyFont', FONT_PATH))
+            print("字体注册成功")
+        except Exception as e:
+            print(f"字体注册失败: {e}")
+            print("生成的 PDF 中文可能会乱码，请检查字体路径")
+
+    def create_table_style(self):
+        """定义表格样式"""
+        style = TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'MyFont'), # 全局使用注册的中文字体
+            ('FONTSIZE', (0, 0), (-1, -1), TABLE_CONFIG['font_size']),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),   # 垂直居中
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),      # 水平左对齐
+            ('TOPPADDING', (0, 0), (-1, -1), 6),      # 上内边距
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),   # 下内边距
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey), # 网格线
+            # 表头样式
+            ('BACKGROUND', (0, 0), (-1, 0), TABLE_CONFIG['header_bg']),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'MyFont'),
+        ])
+        return style
+
+    def generate(self, data):
+        """生成 PDF 文件"""
+        if not data:
+            print("没有数据，无法生成 PDF")
+            return
+
+        doc = SimpleDocTemplate(
+            OUTPUT_PDF_PATH,
+            pagesize=A4,
+            rightMargin=2*cm,
+            leftMargin=2*cm,
+            topMargin=2*cm,
+            bottomMargin=2*cm
+        )
+
+        # 创建支持自动换行的段落样式
+        p_style = ParagraphStyle(
+            name='Normal',
+            fontName='MyFont',
+            fontSize=TABLE_CONFIG['font_size'],
+            leading=TABLE_CONFIG['line_height'], # 行高
+            wordWrap='CJK' # 关键：开启中日韩自动换行
+        )
+
+        # 处理数据：将长文本包裹在 Paragraph 中
+        processed_data = []
+        for i, row in enumerate(data):
+            new_row = []
+            for cell in row:
+                # 第一行是表头，不需要 Paragraph，或者是单独处理
+                if i == 0:
+                    new_row.append(cell)
+                else:
+                    # 只有第二列（商品描述）需要强制换行，其他保持原样或也包裹
+                    # 这里演示全部包裹，最稳妥
+                    new_row.append(Paragraph(str(cell), p_style))
+            processed_data.append(new_row)
+
+        # 构建表格
+        t = Table(processed_data, colWidths=TABLE_CONFIG['col_widths'])
+        t.setStyle(self.create_table_style())
+
+        # 构建文档内容
+        elements = [t]
+
+        # 开始生成
+        doc.build(elements)
+        print(f"PDF 生成成功: {OUTPUT_PDF_PATH}")
