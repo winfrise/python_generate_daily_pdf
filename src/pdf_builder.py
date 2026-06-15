@@ -1,5 +1,5 @@
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib import colors
@@ -7,6 +7,100 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH
+
+
+def create_start():
+    styles = {
+        'Title': ParagraphStyle(
+            name='Title',
+            fontName='MyFont',
+            fontSize=14,   # 大号字
+            leading=20,    # 行高
+            spaceAfter=12, # 段落后间距
+            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
+        ),
+        'Body': ParagraphStyle(
+            name='Body',
+            fontName='MyFont',
+            fontSize=10,   # 中号字 (默认)
+            leading=16,
+            spaceAfter=8,
+            alignment=0,
+        ),
+        'Small': ParagraphStyle(
+            name='Small',
+            fontName='MyFont',
+            fontSize=8,    # 小号字
+            leading=12,
+            spaceAfter=6,
+            textColor=colors.grey, # 灰色文字
+            alignment=0,
+        )
+    }
+
+    header_texts = [
+        ('编号: 2026061200085004702499331705700040431614', "Title"),
+        ('支付宝支付科技有限公司 交易流水证明', "Title"),
+        ('兹证明:周杰伦(证件号码:21090219830118xxxx)在其支付宝账号15831490000中明细信息如下', "Title")
+    ]
+
+    elements = []
+    for text, style_name in header_texts:
+        # 检查样式是否存在，不存在则使用默认 Body 样式
+        para_style = styles.get(style_name, styles['Body'])
+        para = Paragraph(text, para_style)
+        elements.append(para)
+    # 可以在头部文字和表格之间加一个大间距
+    elements.append(Spacer(1, 20)) 
+
+    return elements
+
+def create_end():
+    styles = {
+        'Title': ParagraphStyle(
+            name='Title',
+            fontName='MyFont',
+            fontSize=14,   # 大号字
+            leading=20,    # 行高
+            spaceAfter=12, # 段落后间距
+            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
+        ),
+        'Body': ParagraphStyle(
+            name='Body',
+            fontName='MyFont',
+            fontSize=10,   # 中号字 (默认)
+            leading=16,
+            spaceAfter=8,
+            alignment=0,
+        ),
+        'Small': ParagraphStyle(
+            name='Small',
+            fontName='MyFont',
+            fontSize=8,    # 小号字
+            leading=12,
+            spaceAfter=6,
+            textColor=colors.grey, # 灰色文字
+            alignment=0,
+        )
+    }
+
+    elements = []
+
+    end_texts = [
+        ("这是第一行文字。<br/>这是第二行文字。<br/>这是第三行。", "body"),
+        ("支付宝支付科技有限公司", "body"),
+        ("业务凭证专用章盖章处", "body")
+    ]
+
+    for text, style_name in end_texts:
+        # 检查样式是否存在，不存在则使用默认 Body 样式
+        para_style = styles.get(style_name, styles['Body'])
+        para = Paragraph(text, para_style)
+        elements.append(para)
+    # 可以在头部文字和表格之间加一个大间距
+    elements.append(Spacer(1, 20)) 
+
+    return elements
 
 class PdfBuilder:
     def __init__(self):
@@ -82,7 +176,14 @@ class PdfBuilder:
         t.setStyle(self.create_table_style())
 
         # 构建文档内容
-        elements = [t]
+        elements = []
+
+        # 添加开始的标题
+        elements.extend(create_start())
+        # B. 添加表格
+        elements.append(t)
+        # 添加结束
+        elements.extend(create_end())
 
         # 开始生成
         doc.build(elements)
