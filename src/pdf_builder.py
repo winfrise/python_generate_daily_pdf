@@ -33,8 +33,8 @@ def create_start():
             fontSize=8,             # 字体大小
             leading=9.6,            # 行距
             alignment=0,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
-            firstLineIndent=11*cm,      # 首行缩进
-            spaceBefore=0*cm,          # 段前距
+            firstLineIndent=11.522*cm,      # 首行缩进
+            spaceBefore=0.192*cm,          # 段前距
             spaceAfter=0,           # 段后距
             textColor=colors.black   # 字体颜色
     )
@@ -49,7 +49,7 @@ def create_start():
             leading=14.4,            # 行距
             alignment=1,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
             firstLineIndent=0,      # 首行缩进
-            spaceBefore=0.5843*cm,          # 段前距
+            spaceBefore=0.22*cm,          # 段前距
             spaceAfter=0,           # 段后距
             textColor=colors.black,   # 字体颜色
             letterSpacing=2 # 字间距
@@ -79,15 +79,15 @@ def create_start():
             fontSize=12,             # 字体大小
             leading=14.4,            # 行距
             alignment=0,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
-            firstLineIndent=4.4628*cm,      # 首行缩进
+            firstLineIndent=8.478*cm,      # 首行缩进
             spaceBefore=0.6498*cm,          # 段前距
-            spaceAfter=0,           # 段后距
+            spaceAfter=0.1*cm,           # 段后距
             textColor=colors.black   # 字体颜色
     )
     text4 = Paragraph(text4_content, text4_style)
     elements.append(text4)
 
-    elements.append(Spacer(1, 20)) 
+    # elements.append(Spacer(1, 20)) 
 
     return elements
 
@@ -178,10 +178,10 @@ class PdfBuilder:
         doc = SimpleDocTemplate(
             OUTPUT_PDF_PATH,
             pagesize=A4,
-            rightMargin=2.2964*cm,
-            leftMargin=2.2964*cm,
-            topMargin=1.2585*cm,
-            bottomMargin=1.6228*cm
+            rightMargin=1.72*cm,
+            leftMargin=1.72*cm,
+            topMargin=1.26*cm,
+            bottomMargin=1.26*cm
         )
 
         # 创建支持自动换行的段落样式
