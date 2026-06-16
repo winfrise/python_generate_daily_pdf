@@ -94,9 +94,9 @@ def create_start():
 def create_end():
     elements = []
 
-    elements.append(Spacer(1, 20)) 
+    elements.append(Spacer(1, 100)) 
 
-    text1_content = "特别提示:<br/>1. 本证明仅证明在用户选择的交易类型和时间段内，用户通过支付宝账户发生的历史交易记录情况。<br/>2. 因系统原因或通讯故障等偶发因素导致本回单与实际交易结果不符时，以实际交易情况为准。<br/>3. 支付宝快捷支付等非余额支付方式可能既产生支付宝交易也同步产生银行交易，因此请勿使用本回单进行重复记账。<br/>4. 本回单如经任何涂改、编造，均立即失去效力。<br/>5. 部分账单如：充值提现、账户转存或者个人设置收支等不计入为收入或者支出，记为不计收支类。<br/>6. 因统计逻辑不同，明细金额直接累加后，可能会和下方统计金额不一致，请以实际交易金额为准。<br/>7. 禁止将本回单用于非法用途。<br/>这是第三行。"
+    text1_content = "特别提示:<br/>1. 本证明仅证明在用户选择的交易类型和时间段内，用户通过支付宝账户发生的历史交易记录情况。<br/>2. 因系统原因或通讯故障等偶发因素导致本回单与实际交易结果不符时，以实际交易情况为准。<br/>3. 支付宝快捷支付等非余额支付方式可能既产生支付宝交易也同步产生银行交易，因此请勿使用本回单进行重复记账。<br/>4. 本回单如经任何涂改、编造，均立即失去效力。<br/>5. 部分账单如：充值提现、账户转存或者个人设置收支等不计入为收入或者支出，记为不计收支类。<br/>6. 因统计逻辑不同，明细金额直接累加后，可能会和下方统计金额不一致，请以实际交易金额为准。<br/>7. 禁止将本回单用于非法用途。"
     text1_style = ParagraphStyle(
             name='Text1',
             fontName='MyFont',
@@ -117,6 +117,7 @@ def create_end():
             leading=19.2,    # 行高
             spaceAfter=0.719*cm, # 段落后间距
             alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
+            rightIndent=-0.5*cm,
         )
     text2 = Paragraph(text2_content, text2_style)
     elements.append(text2)
@@ -128,7 +129,7 @@ def create_end():
             fontSize=12,   # 大号字
             leading=14.4,    # 行高
             alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
-            leftIndent=8*cm, 
+            rightIndent=-0.5*cm,
         )
     text3 = Paragraph(text3_content, text3_style)
     elements.append(text3)
