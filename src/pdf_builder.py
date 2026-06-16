@@ -92,49 +92,46 @@ def create_start():
     return elements
 
 def create_end():
-    styles = {
-        'Large': ParagraphStyle(
-            name='Large',
-            fontName='MyFont',
-            fontSize=15,   # 大号字
-            leading=20,    # 行高
-            spaceAfter=12, # 段落后间距
-            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
-        ),
-        'Medium': ParagraphStyle(
-            name='Medium',
-            fontName='MyFont',
-            fontSize=12,   # 大号字
-            leading=20,    # 行高
-            spaceAfter=12, # 段落后间距
-            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
-        ),
-        'Small': ParagraphStyle(
-            name='Small',
-            fontName='MyFont',
-            fontSize=8,    # 小号字
-            leading=12,
-            spaceAfter=6,
-            textColor=colors.black, 
-            alignment=2,
-        )
-    }
-
     elements = []
 
-    end_texts = [
-        ("这是第一行文字。<br/>这是第二行文字。<br/>这是第三行。", "Small"),
-        ("支付宝支付科技有限公司", "Large"),
-        ("业务凭证专用章盖章处", "Medium")
-    ]
-
-    for text, style_name in end_texts:
-        # 检查样式是否存在，不存在则使用默认 Body 样式
-        para_style = styles.get(style_name)
-        para = Paragraph(text, para_style)
-        elements.append(para)
-    # 可以在头部文字和表格之间加一个大间距
     elements.append(Spacer(1, 20)) 
+
+    text1_content = "特别提示:<br/>1. 本证明仅证明在用户选择的交易类型和时间段内，用户通过支付宝账户发生的历史交易记录情况。<br/>2. 因系统原因或通讯故障等偶发因素导致本回单与实际交易结果不符时，以实际交易情况为准。<br/>3. 支付宝快捷支付等非余额支付方式可能既产生支付宝交易也同步产生银行交易，因此请勿使用本回单进行重复记账。<br/>4. 本回单如经任何涂改、编造，均立即失去效力。<br/>5. 部分账单如：充值提现、账户转存或者个人设置收支等不计入为收入或者支出，记为不计收支类。<br/>6. 因统计逻辑不同，明细金额直接累加后，可能会和下方统计金额不一致，请以实际交易金额为准。<br/>7. 禁止将本回单用于非法用途。<br/>这是第三行。"
+    text1_style = ParagraphStyle(
+            name='Text1',
+            fontName='MyFont',
+            fontSize=8,   # 大号字
+            leading=12,    # 行高
+            alignment=0,   # 1=居中, 0=左对齐, 2=右对齐
+            leftIndent=-10
+        )
+    text1 = Paragraph(text1_content, text1_style)
+    elements.append(text1)
+
+
+    text2_content = "支付宝支付科技有限公司"
+    text2_style = ParagraphStyle(
+            name='Text2',
+            fontName='MyFont',
+            fontSize=16,   # 大号字
+            leading=19.2,    # 行高
+            spaceAfter=0.719*cm, # 段落后间距
+            alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
+        )
+    text2 = Paragraph(text2_content, text2_style)
+    elements.append(text2)
+
+    text3_content = "业务凭证专用章盖章处"
+    text3_style = ParagraphStyle(
+            name='Text3',
+            fontName='MyFont',
+            fontSize=12,   # 大号字
+            leading=14.4,    # 行高
+            alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
+            leftIndent=8*cm, 
+        )
+    text3 = Paragraph(text3_content, text3_style)
+    elements.append(text3)
 
     return elements
 
@@ -156,30 +153,22 @@ class PdfBuilder:
         """定义表格样式"""
         style = TableStyle([
 
-            # --- 针对前两行（头部信息）的设置 ---
             # 合并第1行 (Row 0): 从第0列到最后一列 (-1)
             ('SPAN', (0, 0), (-1, 0)),
             # 合并第2行 (Row 1): 从第0列到最后一列 (-1)
             ('SPAN', (0, 1), (-1, 1)),
 
-            # 设置头部文字左对齐，并增加左侧内边距 (Left Padding)
-            ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
-            ('LEFTPADDING', (0, 0), (-1, 1), 4),
-            ('TOPPADDING', (0, 0), (-1, 1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, 1), 2),
-            ('FONTSIZE', (0, 0), (-1, 1), 10),  # 稍微调小字号或保持默认
-
-            # --- 针对原本业务数据的设置 (从第3行开始，即 index=2) ---
-            ('GRID', (0, 2), (-1, -1), 0.5, '#CCCCCC'), # 给下面的数据加网格线
-            ('BACKGROUND', (0, 2), (-1, 2), '#EAEAEA'), # 给原来的表头加背景色
-            ('ALIGN', (0, 2), (-1, -1), 'CENTER'),      # 数据居中
-
+            # 全局样式
             ('FONTNAME', (0, 0), (-1, -1), 'MyFont'), # 全局使用注册的中文字体
             ('FONTSIZE', (0, 0), (-1, -1), 8),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),   # 垂直居中
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),   # 垂直居中
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),      # 水平左对齐
+
             ('TOPPADDING', (0, 0), (-1, -1), 2),      # 上内边距
             ('BOTTOMPADDING', (0, 0), (-1, -1), 2),   # 下内边距
+            ('LEFTPADDING', (0, 0), (-1, -1), 2),   # 下内边距
+            ('RIGHTPADDING', (0, 0), (-1, -1), 2),   # 下内边距
+
             ('GRID', (0, 0), (-1, -1), 0.6, colors.black), # 网格线
         ])
         return style
