@@ -2,48 +2,91 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
+from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH
 
+# 不换行文字
+class NoWrapParagraph(Paragraph):
+    def wrap(self, availWidth, availHeight):
+        # 1. 获取单行所需的真实最小宽度
+        w = self.minWidth()
+
+        # 2. 调用父类 wrap，但传入一个极大的宽度（如 9999 inch）
+        #    这样父类会认为空间无限，不会进行截断或换行计算，从而正确生成 blPara
+        #    高度 h 会被正确计算出来
+        _, h = Paragraph.wrap(self, 9999*inch, availHeight)
+
+        # 3. 返回真实的宽度 w 和计算出的高度 h
+        return w, h
 
 def create_start():
-    styles = {
-        'Medium': ParagraphStyle(
-            name='Medium',
-            fontName='MyFont',
-            fontSize=12,   # 大号字
-            leading=20,    # 行高
-            spaceAfter=12, # 段落后间距
-            alignment=1,   # 1=居中, 0=左对齐, 2=右对齐
-        ),
-        'Small': ParagraphStyle(
-            name='Small',
-            fontName='MyFont',
-            fontSize=8,    # 小号字
-            leading=12,
-            spaceAfter=6,
-            textColor=colors.black, 
-            alignment=2,
-        )
-    }
-
-    header_texts = [
-        ('编号: 2026061200085004702499331705700040431614', "Small"),
-        ('支付宝支付科技有限公司 交易流水证明', "Medium"),
-        ('兹证明:周杰伦(证件号码:21090219830118xxxx)在其支付宝账号15831490000中明细信息如下', "Small"),
-        ('币种：人民币 / 单位：元', "Medium"),
-    ]
-
     elements = []
-    for text, style_name in header_texts:
-        # 检查样式是否存在，不存在则使用默认 Body 样式
-        para_style = styles.get(style_name, styles['Small'])
-        para = Paragraph(text, para_style)
-        elements.append(para)
-    # 可以在头部文字和表格之间加一个大间距
+    
+    text1_content = '编号: 2026061200085004702499331705700040431614'
+    text1_style = ParagraphStyle(
+            name='Text1Style',      # 样式名称（必填）
+            fontName='MyFont',    # 字体名称
+            fontSize=8,             # 字体大小
+            leading=9.6,            # 行距
+            alignment=0,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
+            firstLineIndent=11*cm,      # 首行缩进
+            spaceBefore=0*cm,          # 段前距
+            spaceAfter=0,           # 段后距
+            textColor=colors.black   # 字体颜色
+    )
+    text1 = NoWrapParagraph(text1_content, text1_style)
+    elements.append(text1)
+
+    text2_content = '支付宝支付科技有限公司&nbsp;&nbsp;&nbsp;交易流水证明'
+    text2_style = ParagraphStyle(
+            name='Text2Style',      # 样式名称（必填）
+            fontName='MyFont',    # 字体名称
+            fontSize=12,             # 字体大小
+            leading=14.4,            # 行距
+            alignment=1,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
+            firstLineIndent=0,      # 首行缩进
+            spaceBefore=0.5843*cm,          # 段前距
+            spaceAfter=0,           # 段后距
+            textColor=colors.black,   # 字体颜色
+            letterSpacing=2 # 字间距
+    )
+    text2 = Paragraph(text2_content, text2_style)
+    elements.append(text2)
+
+    text3_content = '兹证明:周杰伦(证件号码:21090219830118xxxx)在其支付宝账号15831490000中明细信息如下:'
+    text3_style = ParagraphStyle(
+            name='Text3Style',      # 样式名称（必填）
+            fontName='MyFont',    # 字体名称
+            fontSize=8,             # 字体大小
+            leading=9.6,            # 行距
+            alignment=0,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
+            firstLineIndent=16,      # 首行缩进
+            spaceBefore=0.756*cm,          # 段前距
+            spaceAfter=0,           # 段后距
+            textColor=colors.black   # 字体颜色
+    )
+    text3 = Paragraph(text3_content, text3_style)
+    elements.append(text3)
+
+    text4_content = '币种：人民币 / 单位：元'
+    text4_style = ParagraphStyle(
+            name='Text4Style',      # 样式名称（必填）
+            fontName='MyFont',    # 字体名称
+            fontSize=12,             # 字体大小
+            leading=14.4,            # 行距
+            alignment=0,     # 对齐方式 1=居中, 0=左对齐, 2=右对齐
+            firstLineIndent=4.4628*cm,      # 首行缩进
+            spaceBefore=0.6498*cm,          # 段前距
+            spaceAfter=0,           # 段后距
+            textColor=colors.black   # 字体颜色
+    )
+    text4 = Paragraph(text4_content, text4_style)
+    elements.append(text4)
+
     elements.append(Spacer(1, 20)) 
 
     return elements
@@ -135,10 +178,10 @@ class PdfBuilder:
         doc = SimpleDocTemplate(
             OUTPUT_PDF_PATH,
             pagesize=A4,
-            rightMargin=2*cm,
-            leftMargin=2*cm,
-            topMargin=2*cm,
-            bottomMargin=2*cm
+            rightMargin=2.2964*cm,
+            leftMargin=2.2964*cm,
+            topMargin=1.2585*cm,
+            bottomMargin=1.6228*cm
         )
 
         # 创建支持自动换行的段落样式
