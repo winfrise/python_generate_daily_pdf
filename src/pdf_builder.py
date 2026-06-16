@@ -155,6 +155,25 @@ class PdfBuilder:
     def create_table_style(self):
         """定义表格样式"""
         style = TableStyle([
+
+            # --- 针对前两行（头部信息）的设置 ---
+            # 合并第1行 (Row 0): 从第0列到最后一列 (-1)
+            ('SPAN', (0, 0), (-1, 0)),
+            # 合并第2行 (Row 1): 从第0列到最后一列 (-1)
+            ('SPAN', (0, 1), (-1, 1)),
+
+            # 设置头部文字左对齐，并增加左侧内边距 (Left Padding)
+            ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
+            ('LEFTPADDING', (0, 0), (-1, 1), 10),
+            ('TOPPADDING', (0, 0), (-1, 1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, 1), 8),
+            ('FONTSIZE', (0, 0), (-1, 1), 10),  # 稍微调小字号或保持默认
+
+            # --- 针对原本业务数据的设置 (从第3行开始，即 index=2) ---
+            ('GRID', (0, 2), (-1, -1), 0.5, '#CCCCCC'), # 给下面的数据加网格线
+            ('BACKGROUND', (0, 2), (-1, 2), '#EAEAEA'), # 给原来的表头加背景色
+            ('ALIGN', (0, 2), (-1, -1), 'CENTER'),      # 数据居中
+
             ('FONTNAME', (0, 0), (-1, -1), 'MyFont'), # 全局使用注册的中文字体
             ('FONTSIZE', (0, 0), (-1, -1), 8),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),   # 垂直居中
@@ -162,10 +181,6 @@ class PdfBuilder:
             ('TOPPADDING', (0, 0), (-1, -1), 2),      # 上内边距
             ('BOTTOMPADDING', (0, 0), (-1, -1), 2),   # 下内边距
             ('GRID', (0, 0), (-1, -1), 0.6, colors.black), # 网格线
-            # 表头样式
-            # ('BACKGROUND', (0, 0), (-1, 0), TABLE_CONFIG['header_bg']),
-            # ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            # ('FONTNAME', (0, 0), (-1, 0), 'MyFont'),
         ])
         return style
 
@@ -174,6 +189,11 @@ class PdfBuilder:
         if not data:
             print("没有数据，无法生成 PDF")
             return
+
+        full_data = [
+                ["交易时间段：2026-01-01 00:00:00 至 2026-06-12 23:59:59"],  # 第1行
+                ["交易类型：全部"],                                      # 第2行
+            ] + data
 
         doc = SimpleDocTemplate(
             OUTPUT_PDF_PATH,
@@ -195,7 +215,7 @@ class PdfBuilder:
 
         # 处理数据：将长文本包裹在 Paragraph 中
         processed_data = []
-        for i, row in enumerate(data):
+        for i, row in enumerate(full_data):
             new_row = []
             for cell in row:
                 # 第一行是表头，不需要 Paragraph，或者是单独处理
