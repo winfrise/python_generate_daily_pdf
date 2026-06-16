@@ -164,9 +164,9 @@ class PdfBuilder:
 
             # 设置头部文字左对齐，并增加左侧内边距 (Left Padding)
             ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
-            ('LEFTPADDING', (0, 0), (-1, 1), 10),
+            ('LEFTPADDING', (0, 0), (-1, 1), 4),
             ('TOPPADDING', (0, 0), (-1, 1), 8),
-            ('BOTTOMPADDING', (0, 0), (-1, 1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, 1), 2),
             ('FONTSIZE', (0, 0), (-1, 1), 10),  # 稍微调小字号或保持默认
 
             # --- 针对原本业务数据的设置 (从第3行开始，即 index=2) ---
