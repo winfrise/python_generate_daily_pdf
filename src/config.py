@@ -12,7 +12,7 @@ EXCEL_PATH = "/Users/teacher/Downloads/百度网盘下载/水/111.xlsx"
 
 # 输出文件路径
 # OUTPUT_PDF_PATH = os.path.join(BASE_DIR, "output_report.pdf")
-OUTPUT_PDF_PATH="/Users/teacher/Downloads/百度网盘下载/水/1113332222.pdf"
+OUTPUT_PATH="/Users/teacher/Downloads/百度网盘下载/水/生成的文件.pdf"
 
 # --- 2. 字体配置 ---
 # 注意：macOS 系统自带字体通常不在项目目录下，建议直接使用系统绝对路径

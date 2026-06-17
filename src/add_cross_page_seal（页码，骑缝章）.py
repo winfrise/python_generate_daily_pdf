@@ -49,12 +49,11 @@ def crop_seal_piece(input_path, seal_path):
     print('Seal裁剪完成')
 
 
-def add_cross_page_seal(input_path, seal_path, output_path):
+def add_cross_page_seal(input_path, seal_path):
     """
     给 PDF 添加骑缝章
     :param pdf_path: 原始 PDF 路径
     :param seal_path: 印章图片路径 (支持 PNG/JPG)
-    :param output_path: 输出 PDF 路径
     """
     if not os.path.exists(input_path) or not os.path.exists(seal_path):
         print("错误：文件路径不存在")
@@ -62,6 +61,9 @@ def add_cross_page_seal(input_path, seal_path, output_path):
 
     input_path_dir = os.path.dirname(input_path)
     seal_piece_dir = os.path.join(input_path_dir, "seal_images")
+
+    base_name, ext = os.path.splitext(input_path)
+    output_path = f"{base_name}_page_seal{ext}"
 
     doc = fitz.open(input_path)
     total_pages = len(doc)
@@ -162,9 +164,8 @@ def add_cross_page_seal(input_path, seal_path, output_path):
 
 
 if __name__ == "__main__":
-    input_path = "/Users/teacher/Downloads/百度网盘下载/水/1113332222.pdf"
-    output_path = "/Users/teacher/Downloads/百度网盘下载/水/1113332222xxx.pdf"
+    input_path = "/Users/teacher/Downloads/百度网盘下载/水/生成的文件.pdf"
     seal_image_path = STAMP_PATH
 
     crop_seal_piece(input_path, seal_image_path)
-    add_cross_page_seal(input_path, seal_image_path, output_path)
+    add_cross_page_seal(input_path, seal_image_path)

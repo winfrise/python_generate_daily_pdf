@@ -7,7 +7,7 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH, STAMP_PATH
+from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PATH, STAMP_PATH
 from utils.relative_overlay import RelativeOverlay 
 
 # 不换行文字
@@ -195,8 +195,9 @@ class PdfBuilder:
                 ["交易类型：全部"],                                      # 第2行
             ] + data
 
+        output_path = OUTPUT_PATH
         doc = SimpleDocTemplate(
-            OUTPUT_PDF_PATH,
+            output_path,
             pagesize=A4,
             rightMargin=1.72*cm,
             leftMargin=1.72*cm,
@@ -243,4 +244,4 @@ class PdfBuilder:
 
         # 开始生成
         doc.build(elements)
-        print(f"PDF 生成成功: {OUTPUT_PDF_PATH}")
+        print(f"PDF 生成成功: {output_path}")
