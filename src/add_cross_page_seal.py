@@ -30,7 +30,6 @@ def crop_seal_piece(input_path, seal_path):
     seal_piece_dir = os.path.join(input_path_dir, "seal_images")
 
     for i in range(total_pages):
-        page = doc[i]
 
         # --- A. 切割印章 ---å
         # 计算当前页面的切片位置 (左, 上, 右, 下)
@@ -65,6 +64,7 @@ def add_cross_page_seal(input_path, seal_path, output_path):
     seal_piece_dir = os.path.join(input_path_dir, "seal_images")
 
     doc = fitz.open(input_path)
+    total_pages = len(doc)
 
     # --- 配置参数 ---
     TARGET_HEIGHT_CM = 4  # 目标高度：4 厘米
@@ -87,37 +87,73 @@ def add_cross_page_seal(input_path, seal_path, output_path):
             print(f"[跳过] 第 {page_num} 页对应的图片未找到: {img_name}")
             continue
 
-        try:
-            # 2. 获取当前页面尺寸 (用于定位)
-            page_rect = page.rect
-            page_w = page_rect.width
-            page_h = page_rect.height
 
-            # 3. 获取图片原始尺寸并计算等比缩放后的宽度
-            # 使用 fitz.open 快速读取图片信息，无需加载整个图像到内存
-            img_info = fitz.open(img_path)
-            original_w = img_info[0].rect.width
-            original_h = img_info[0].rect.height
-            img_info.close()
+        # ========== A. 添加骑缝章 ==========
+        page_rect = page.rect
+        page_w = page_rect.width
+        page_h = page_rect.height
 
-            # 核心算法：(原宽 / 原高) * 目标高度 = 目标宽度
-            scale_ratio = original_w / original_h
-            target_width_pt = target_height_pt * scale_ratio
+        # 3. 获取图片原始尺寸并计算等比缩放后的宽度
+        # 使用 fitz.open 快速读取图片信息，无需加载整个图像到内存
+        img_info = fitz.open(img_path)
+        original_w = img_info[0].rect.width
+        original_h = img_info[0].rect.height
+        img_info.close()
 
-            # 4. 计算插入坐标 (右下角 + 垂直居中)
-            # x0: 页面总宽 - 右边距 - 图片宽度
-            x0 = page_w - MARGIN_RIGHT - target_width_pt
-            y0 = (page_h - target_height_pt) / 2  # 垂直居中
+        # 核心算法：(原宽 / 原高) * 目标高度 = 目标宽度
+        scale_ratio = original_w / original_h
+        target_width_pt = target_height_pt * scale_ratio
 
-            # 构建矩形区域 (x0, y0, x1, y1)
-            rect = fitz.Rect(x0, y0, x0 + target_width_pt, y0 + target_height_pt)
+        # 4. 计算插入坐标 (右下角 + 垂直居中)
+        # x0: 页面总宽 - 右边距 - 图片宽度
+        x0 = page_w - MARGIN_RIGHT - target_width_pt
+        y0 = (page_h - target_height_pt) / 2  # 垂直居中
 
-            # 5. 插入图片
-            page.insert_image(rect, filename=img_path)
-            print(f"[成功] 第 {page_num} 页已添加印章 (尺寸: {target_width_pt:.1f} x {target_height_pt:.1f} pt)")
+        # 构建矩形区域 (x0, y0, x1, y1)
+        rect = fitz.Rect(x0, y0, x0 + target_width_pt, y0 + target_height_pt)
 
-        except Exception as e:
-            print(f"[错误] 处理第 {page_num} 页时出错: {e}")
+        # 5. 插入图片
+        page.insert_image(rect, filename=img_path)
+        print(f"[成功] 第 {page_num} 页已添加印章 (尺寸: {target_width_pt:.1f} x {target_height_pt:.1f} pt)")
+
+
+
+        # ========== B. 添加底部居中页码 ==========
+        # 页码配置
+        PAGE_NUM_FONT_SIZE = 10   # 页码字体大小 (pt)
+        PAGE_NUM_MARGIN_BOTTOM = 30 # 页码距离底部的边距 (pt)
+        PAGE_NUM_TEXT_COLOR = (0, 0, 0)    # 页码颜色：黑色
+        PAGE_NUM_FONT_NAME="Simum"
+
+        text = f"第 {page_num} 页，共 {total_pages} 页"
+        # x 轴：页面宽度 / 2 实现水平居中
+        # y 轴：页面高度 - 底部边距 实现底部对齐
+        insert_point = fitz.Point(page_w / 2, page_h - PAGE_NUM_MARGIN_BOTTOM)
+        
+        width = page.rect.width
+        height = page.rect.height
+
+        text_width = fitz.get_text_length(
+            text,
+            # fontname=PAGE_NUM_FONT_NAME,
+            fontsize=PAGE_NUM_FONT_SIZE
+        )
+
+        # 计算居中坐标
+        x = (width - text_width) / 2
+        y = height - PAGE_NUM_MARGIN_BOTTOM
+
+        # 插入文本 (不再使用 align 参数)
+        page.insert_text(
+            (x, y),
+            text,
+            # fontname=FONT_NAME,
+            fontsize=PAGE_NUM_FONT_SIZE,
+            color=PAGE_NUM_TEXT_COLOR
+        )
+
+
+
     # 保存结果
     doc.save(output_path)
     doc.close()
