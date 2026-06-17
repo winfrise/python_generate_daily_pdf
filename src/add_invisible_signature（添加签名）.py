@@ -1,34 +1,79 @@
 from spire.pdf.common import *
 from spire.pdf import *
+import os
+import subprocess
+
+def validate_certificate(cert_path, password):
+    """验证证书是否可读"""
+    try:
+        # 使用 openssl 验证
+        cmd = [
+            "openssl", "pkcs12",
+            "-in", cert_path,
+            "-info", "-noout",
+            "-passin", f"pass:{password}"
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print("✅ 证书验证通过")
+            return True
+        else:
+            print(f"❌ 证书验证失败: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"❌ 验证过程出错: {e}")
+        return False
 
 def add_invisible_signature(input_path):
-
-    base_name, ext = os.path.splitext(input_path)
-    output_path = f"{base_name}_signed{ext}"
-
-    # 1. 加载 PDF 文档
-    pdf = PdfDocument()
-    pdf.LoadFromFile(input_path)
-    
-    # 2. 创建签名生成器（需要一个证书文件，如 .pfx 或 .p12）
-    # 注意：这里必须提供真实的证书和密码，否则无法生成底层签名结构
-    signatureMaker = PdfOrdinarySignatureMaker(pdf, "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/certificate.pfx", "123456")
-    
-    # 3. 设置签名元数据（这些信息会显示在 WPS/Acrobat 的签名面板中）
-    signature = signatureMaker.Signature
-    signature.Name = "张三"
-    signature.Reason = "文档审批确认"
-    signature.Location = "中国"
-    
-    # 4. 添加不可见签名（只传签名字段名称，不传页面坐标和外观）
-    signatureMaker.MakeSignature("InvisibleSignatureField")
-    
-    # 5. 保存文档
-    pdf.SaveToFile(output_path)
-    pdf.Close()
-    print(f"不可见签名已添加，保存至: {output_path}")
+    try:
+        base_name, ext = os.path.splitext(input_path)
+        output_path = f"{base_name}_signed{ext}"
+        
+        # 1. 加载 PDF 文档
+        pdf = PdfDocument()
+        pdf.LoadFromFile(input_path)
+        
+        # 2. 证书信息
+        cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert_compatible.pfx"
+        password = "123456"
+        
+        # 3. 验证证书
+        if not validate_certificate(cert_path, password):
+            print("⚠️  证书验证失败，尝试使用备用证书...")
+            # 尝试其他可能的证书路径
+            alt_paths = [
+                "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert.p12",
+                "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/certificate.p12",
+            ]
+            for alt in alt_paths:
+                if os.path.exists(alt) and validate_certificate(alt, password):
+                    cert_path = alt
+                    print(f"✅ 使用备用证书: {alt}")
+                    break
+        
+        # 4. 创建签名生成器
+        signatureMaker = PdfOrdinarySignatureMaker(pdf, cert_path, password)
+        
+        # 5. 设置签名元数据
+        signature = signatureMaker.Signature
+        signature.Name = "张三"
+        signature.Reason = "文档审批确认"
+        signature.Location = "中国"
+        
+        # 6. 添加不可见签名
+        signatureMaker.MakeSignature("InvisibleSignatureField")
+        
+        # 7. 保存文档
+        pdf.SaveToFile(output_path)
+        pdf.Close()
+        print(f"✅ 不可见签名已添加，保存至: {output_path}")
+        
+    except Exception as e:
+        print(f"❌ 签名失败: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     input_path = "/Users/teacher/Downloads/百度网盘下载/水/生成的文件_page_seal.pdf"
-    # 运行测试
     add_invisible_signature(input_path)

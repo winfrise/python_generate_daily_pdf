@@ -1,45 +1,66 @@
+# src/generate_compatible_cert.py
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography import x509
 from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes
 import datetime
-import cryptography.hazmat.primitives.serialization.pkcs12
+import os
+from cryptography.hazmat.primitives.serialization import pkcs12
 
-# 1. 生成私钥
-private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=2048,
-)
+def generate_macos_compatible_cert():
+    """生成 macOS 兼容的 PKCS#12 证书"""
+    
+    # 1. 生成 RSA 私钥（使用 2048 位）
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+    )
+    
+    # 2. 创建自签名证书
+    subject = issuer = x509.Name([
+        x509.NameAttribute(NameOID.COMMON_NAME, u"Test Certificate"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Test Org"),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
+    ])
+    
+    cert = x509.CertificateBuilder().subject_name(
+        subject
+    ).issuer_name(
+        issuer
+    ).public_key(
+        private_key.public_key()
+    ).serial_number(
+        x509.random_serial_number()
+    ).not_valid_before(
+        datetime.datetime.utcnow()
+    ).not_valid_after(
+        datetime.datetime.utcnow() + datetime.timedelta(days=365)
+    ).add_extension(
+        x509.BasicConstraints(ca=True, path_length=None),
+        critical=True,
+    ).sign(private_key, hashes.SHA256())
+    
+    # 3. 序列化为 PKCS#12 格式
+    # 使用较新的加密算法（AES-256-CBC）
+    p12_data = serialization.pkcs12.serialize_key_and_certificates(
+        name=b"test_cert",
+        key=private_key,
+        cert=cert,
+        cas=None,
+        encryption_algorithm=serialization.BestAvailableEncryption(b"123456")
+    )
+    
+    # 4. 保存证书
+    cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert_compatible.pfx"
+    with open(cert_path, "wb") as f:
+        f.write(p12_data)
+    
+    print(f"✅ 兼容证书已生成: {cert_path}")
+    print(f"📄 密码: 123456")
+    print(f"🔑 算法: RSA 2048 + SHA256 + AES-256-CBC")
+    
+    return cert_path
 
-# 2. 构建自签名证书
-subject = issuer = x509.Name([
-    x509.NameAttribute(NameOID.COUNTRY_NAME, "CN"),
-    x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "Beijing"),
-    x509.NameAttribute(NameOID.LOCALITY_NAME, "Beijing"),
-    x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Test Org"),
-    x509.NameAttribute(NameOID.COMMON_NAME, "test.example.com"),
-])
-
-cert = (
-    x509.CertificateBuilder()
-    .subject_name(subject)
-    .issuer_name(issuer)
-    .public_key(private_key.public_key())
-    .serial_number(x509.random_serial_number())
-    .not_valid_before(datetime.datetime.utcnow())
-    .not_valid_after(datetime.datetime.utcnow() + datetime.timedelta(days=365))
-    .sign(private_key, hashes.SHA256())
-)
-
-# 3. 打包为 PKCS#12 (.pfx) 格式
-pfx_data = serialization.pkcs12.serialize_key_and_certificates(
-    name=b"my-cert",
-    key=private_key,
-    cert=cert,
-    cas=None,
-    encryption_algorithm=serialization.BestAvailableEncryption(b"your_password")
-)
-
-# 4. 保存到文件
-with open("certificate.pfx", "wb") as f:
-    f.write(pfx_data)
+if __name__ == "__main__":
+    generate_macos_compatible_cert()
