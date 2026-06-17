@@ -1,5 +1,5 @@
-from src.excel_reader import read_order_data
-from src.pdf_builder import PdfBuilder
+from tools.excel_reader import read_order_data
+from tools.pdf_builder import PdfBuilder
 
 def main():
     print("--- 开始生成订单 PDF ---")
