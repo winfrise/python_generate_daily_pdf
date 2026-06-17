@@ -8,6 +8,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH, STAMP_PATH
+from utils.relative_overlay import RelativeOverlay 
 
 # 不换行文字
 class NoWrapParagraph(Paragraph):
@@ -122,8 +123,8 @@ def create_end():
     text2 = Paragraph(text2_content, text2_style)
     elements.append(text2)
 
-    text3_content = "业务凭证专用章盖章处"
-    text3_style = ParagraphStyle(
+    stamp_text_content = "业务凭证专用章盖章处"
+    stamp_text_style = ParagraphStyle(
             name='Text3',
             fontName='MyFont',
             fontSize=12,  
@@ -131,21 +132,18 @@ def create_end():
             alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
             rightIndent=-0.5*cm,
         )
-    text3 = Paragraph(text3_content, text3_style)
-    elements.append(text3)
-
+    stamp_text = Paragraph(stamp_text_content, stamp_text_style)
 
     stamp_img = Image(STAMP_PATH, width=4*cm, height=4*cm)
 
-    # 【关键步骤】设置印章的位置属性
-    # hAlign: 'RIGHT' 表示让印章靠右对齐（适合放在“盖章处”文字的右侧）
-    # vSpace: 设置为负数（例如 -2*cm），可以让印章向上“飘”，覆盖到上一行文字上
-    stamp_img.hAlign = 'LEFT'
+    overlay_stamp = RelativeOverlay(
+        target_element=stamp_text,
+        overlay_element=stamp_img,
+        offset_x=11.5*cm, 
+        offset_y=-2.5*cm
+    )
 
-
-    up_pull = Spacer(1, -2.5*cm) 
-    elements.append(up_pull)
-    elements.append(stamp_img)
+    elements.append(overlay_stamp)
     return elements
 
 class PdfBuilder:
