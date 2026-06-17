@@ -35,7 +35,7 @@ def add_invisible_signature(input_path):
         pdf.LoadFromFile(input_path)
         
         # 2. 证书信息
-        cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert_compatible.pfx"
+        cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/wechat3_signed_by_ca.pfx"
         password = "123456"
         
         # 3. 验证证书
@@ -57,9 +57,12 @@ def add_invisible_signature(input_path):
         
         # 5. 设置签名元数据
         signature = signatureMaker.Signature
-        signature.Name = "张三"
-        signature.Reason = "文档审批确认"
-        signature.Location = "中国"
+        signature.Name = "支付宝贝"
+        signature.Reason = "文档审批确认111"
+        signature.Location = "CN"
+
+
+        
         
         # 6. 添加不可见签名
         signatureMaker.MakeSignature("InvisibleSignatureField")

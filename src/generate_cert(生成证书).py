@@ -19,9 +19,9 @@ def generate_macos_compatible_cert():
     
     # 2. 创建自签名证书
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, u"Test Certificate"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Test Org"),
-        x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
+        x509.NameAttribute(NameOID.COMMON_NAME, u"微信3"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"Test Org3"),
+        x509.NameAttribute(NameOID.COUNTRY_NAME, u"33"),
     ])
     
     cert = x509.CertificateBuilder().subject_name(
