@@ -1,5 +1,17 @@
 import pandas as pd
 from config import EXCEL_PATH
+import re
+
+
+
+# 2. 定义清洗函数
+def clean_cell(value):
+    if pd.isna(value):
+        return value
+    # 移除所有空白字符(空格、换行、制表符等)
+    return re.sub(r'\s+', '', str(value))
+
+
 
 def read_order_data():
     """
@@ -12,6 +24,18 @@ def read_order_data():
         # 【关键】axis=1 表示按列操作，how='all' 表示整列都是 NaN 才删除
         # 这样可以去除 Excel 中那些看不见的空白列
         df = df.dropna(axis=1, how='all')
+
+
+        # 处理日期
+        df[6] = pd.to_datetime(df[6], errors='coerce')
+        df[6] = df[6].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+        target_columns = [4, 5] 
+        for col in target_columns:
+            if col in df.columns:  # 增加一层保护，防止列名不存在时报错
+                df[col] = df[col].map(clean_cell) 
+              
+
 
         table_data = df.values.tolist()
 
