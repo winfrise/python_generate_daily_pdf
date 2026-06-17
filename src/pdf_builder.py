@@ -142,10 +142,8 @@ def create_end():
     # vSpace: 设置为负数（例如 -2*cm），可以让印章向上“飘”，覆盖到上一行文字上
     stamp_img.hAlign = 'LEFT'
 
-    left_push = Spacer(10*cm, 0) 
 
     up_pull = Spacer(1, -2.5*cm) 
-    elements.append(left_push)
     elements.append(up_pull)
     elements.append(stamp_img)
     return elements
