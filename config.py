@@ -19,6 +19,8 @@ OUTPUT_PDF_PATH="/Users/teacher/Downloads/百度网盘下载/水/1113332222.pdf"
 # 如果一定要用项目里的字体，请确保 assets/fonts/SimSun.ttf 存在
 FONT_PATH = os.path.join(BASE_DIR, "assets", "fonts", "SimSun.ttf")
 
+STAMP_PATH = os.path.join(BASE_DIR, "assets", "images", "stamp.png")
+
 # 备选方案：如果是 macOS 开发测试，可以直接用系统自带的黑体，避免找不到字体的报错
 # FONT_PATH = "/System/Library/Fonts/PingFang.ttc"
 

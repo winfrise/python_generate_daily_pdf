@@ -1,5 +1,5 @@
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib.units import inch
@@ -7,7 +7,7 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH
+from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PDF_PATH, STAMP_PATH
 
 # 不换行文字
 class NoWrapParagraph(Paragraph):
@@ -126,7 +126,7 @@ def create_end():
     text3_style = ParagraphStyle(
             name='Text3',
             fontName='MyFont',
-            fontSize=12,   # 大号字
+            fontSize=12,  
             leading=14.4,    # 行高
             alignment=2,   # 1=居中, 0=左对齐, 2=右对齐
             rightIndent=-0.5*cm,
@@ -134,6 +134,20 @@ def create_end():
     text3 = Paragraph(text3_content, text3_style)
     elements.append(text3)
 
+
+    stamp_img = Image(STAMP_PATH, width=4*cm, height=4*cm)
+
+    # 【关键步骤】设置印章的位置属性
+    # hAlign: 'RIGHT' 表示让印章靠右对齐（适合放在“盖章处”文字的右侧）
+    # vSpace: 设置为负数（例如 -2*cm），可以让印章向上“飘”，覆盖到上一行文字上
+    stamp_img.hAlign = 'LEFT'
+
+    left_push = Spacer(10*cm, 0) 
+
+    up_pull = Spacer(1, -2.5*cm) 
+    elements.append(left_push)
+    elements.append(up_pull)
+    elements.append(stamp_img)
     return elements
 
 class PdfBuilder:
