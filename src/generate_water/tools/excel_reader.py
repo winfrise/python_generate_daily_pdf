@@ -1,5 +1,4 @@
 import pandas as pd
-from config import EXCEL_PATH
 import re
 
 
@@ -13,13 +12,13 @@ def clean_cell(value):
 
 
 
-def read_order_data():
+def read_order_data(excel_path):
     """
     读取 Excel 数据并转换为 ReportLab 需要的格式
     """
     try:
         # header=None 确保第一行被当作数据处理
-        df = pd.read_excel(EXCEL_PATH, header=None)
+        df = pd.read_excel(excel_path, header=None)
 
         # 【关键】axis=1 表示按列操作，how='all' 表示整列都是 NaN 才删除
         # 这样可以去除 Excel 中那些看不见的空白列
@@ -48,8 +47,8 @@ def read_order_data():
         return cleaned_data
 
     except FileNotFoundError:
-        print(f"错误：找不到文件 {EXCEL_PATH}")
-        print("请检查 config.py 中的 EXCEL_PATH 是否正确")
+        print(f"错误：找不到文件 {excel_path}")
+        print("请检查 config.py 中的 excel_path 是否正确")
         return []
     except Exception as e:
         print(f"读取 Excel 发生未知错误: {e}")

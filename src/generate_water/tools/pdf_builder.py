@@ -7,7 +7,7 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from config import FONT_PATH, TABLE_CONFIG, OUTPUT_PATH, STAMP_PATH
+from config import FONT_PATH, TABLE_CONFIG, STAMP_PATH
 from utils.relative_overlay import RelativeOverlay 
 
 # 不换行文字
@@ -184,7 +184,7 @@ class PdfBuilder:
         ])
         return style
 
-    def generate(self, data):
+    def generate(self, data, output_path):
         """生成 PDF 文件"""
         if not data:
             print("没有数据，无法生成 PDF")
@@ -195,7 +195,6 @@ class PdfBuilder:
                 ["交易类型：全部"],                                      # 第2行
             ] + data
 
-        output_path = OUTPUT_PATH
         doc = SimpleDocTemplate(
             output_path,
             pagesize=A4,

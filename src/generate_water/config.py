@@ -5,15 +5,6 @@ from reportlab.lib import colors
 # 获取当前脚本所在的绝对路径，防止相对路径出错
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# --- 1. 路径配置 ---
-# 数据文件路径
-# EXCEL_PATH = os.path.join(BASE_DIR, "assets","data", "11.xlsx")
-EXCEL_PATH = "/Users/teacher/Downloads/百度网盘下载/水/111.xlsx"
-
-# 输出文件路径
-# OUTPUT_PDF_PATH = os.path.join(BASE_DIR, "output_report.pdf")
-OUTPUT_PATH="/Users/teacher/Downloads/百度网盘下载/水/生成的文件.pdf"
-
 # --- 2. 字体配置 ---
 # 注意：macOS 系统自带字体通常不在项目目录下，建议直接使用系统绝对路径
 # 如果一定要用项目里的字体，请确保 assets/fonts/SimSun.ttf 存在
