@@ -124,8 +124,8 @@ def add_cross_page_seal(input_path, seal_path, add_list):
             # ========== B. 添加底部居中页码 ==========
 
             # 1. 加载宋体字体
-            SimSun_FONT = fitz.Font(fontfile=FONT_PATH, fontname="simsun")
-            simsum_insert_font = page.insert_font(fontfile=FONT_PATH, fontname="SimSun")
+            page.insert_font(fontfile=FONT_PATH, fontname="SimSun")
+            SimSun_FONT = fitz.Font(fontfile=FONT_PATH, fontname="SimSun")
 
             text = f"第 {page_num} 页，共 {total_pages} 页"
             fontsize = 10
@@ -144,7 +144,7 @@ def add_cross_page_seal(input_path, seal_path, add_list):
             page.insert_text(
                 (x_center, y),
                 text,
-                fontname="simsun",  
+                fontname="SimSun", 
                 fontsize=fontsize,
                 color=(0, 0, 0)
             )
