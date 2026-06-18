@@ -8,7 +8,7 @@ import datetime
 import os
 from cryptography.hazmat.primitives.serialization import pkcs12
 
-def generate_macos_compatible_cert(cert_path):
+def generate_self_cert(cert_path):
     """生成 macOS 兼容的 PKCS#12 证书"""
     
     # 1. 生成 RSA 私钥（使用 2048 位）
@@ -68,4 +68,4 @@ if __name__ == "__main__":
     formatted_time = current_time.strftime("%Y年%m月%d日%H时%M分%S秒")
 
     cert_path = os.path.join(BASE_DIR, "../cert", f"cert_self_signed_{formatted_time}.pfx")
-    generate_macos_compatible_cert(cert_path)
+    generate_self_cert(cert_path)
