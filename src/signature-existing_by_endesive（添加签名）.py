@@ -16,7 +16,7 @@ import os
 
 
 
-def generate_ca_cert(cert_info, cert_path):
+def generate_ca_cert(cert_path):
     # ==============================
     # 第一步：生成根 CA 证书 (颁发者)
     # 这个证书将作为 "Issued by" 的来源
@@ -30,11 +30,7 @@ def generate_ca_cert(cert_info, cert_path):
 
     # 2. 构建根 CA 证书主体信息 (这就是以后显示的 "Issued by")
     ca_subject = ca_issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, u"11"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"22"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, u"33"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"44"), 
-        x509.NameAttribute(NameOID.COMMON_NAME, cert_info.get("issued_by")),
+        x509.NameAttribute(NameOID.COMMON_NAME, "天威诚信CA"),
     ])
 
     # 3. 创建自签名的根证书
@@ -66,8 +62,8 @@ def generate_ca_cert(cert_info, cert_path):
     # 2. 构建用户证书主体信息 (这就是以后显示的 "Signed by")
     user_subject = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, cert_info.get("org_name")),
-        x509.NameAttribute(NameOID.COMMON_NAME, cert_info.get("issued_to")), # <--- 这是签名者的名字
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "北京天威诚信电子商务服务有限公司"),
+        x509.NameAttribute(NameOID.COMMON_NAME, "支付宝支付科技有限公司"), # <--- 这是签名者的名字
     ])
 
     # 3. 创建由根 CA 签发的用户证书
@@ -108,7 +104,7 @@ def generate_ca_cert(cert_info, cert_path):
     return cert_path
 
 
-def add_cert_sign(input_path, output_path, cert_info, cert_path):
+def add_cert_sign(input_path, output_path,  cert_path):
 
     date = datetime.datetime.utcnow() - datetime.timedelta(hours=12)
     date = date.strftime("D:%Y%m%d%H%M%S+00'00'")
@@ -120,7 +116,7 @@ def add_cert_sign(input_path, output_path, cert_info, cert_path):
         "sigpage": 0,
         "signform": True,
         "sigfield": "Signature",
-        "reason": cert_info.get('description'),
+        "reason": "电子合同签约",
         "password": "1234",
     }
 
@@ -148,13 +144,8 @@ if __name__ == "__main__":
 
 
     # 一、生成证书
-    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_ca_signed.pfx")
-    cert_info_1 = {
-        "issued_to": "支付宝支付科技有限公司",
-        "issued_by": "天威诚信CA",
-        "org_name": "北京天威诚信电子商务服务有限公司"
-    }
-    generate_ca_cert(cert_path = cert_path, cert_info = cert_info_1)
+    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_ca_signed_{formatted_time}.pfx")
+    generate_ca_cert(cert_path = cert_path)
 
 
     # 二、添加签名
@@ -163,12 +154,9 @@ if __name__ == "__main__":
     base_name, ext = os.path.splitext(input_path)
     output_path = f"{base_name}_signature-existing{ext}"
 
-    cert_info_2 = {
-        "description": "电子合同签约"
-    }
+
     add_cert_sign(
         input_path = input_path, 
         output_path = output_path, 
-        cert_info = cert_info_2, 
         cert_path = cert_path
     )
