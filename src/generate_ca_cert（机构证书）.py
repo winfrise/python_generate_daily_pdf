@@ -104,6 +104,6 @@ if __name__ == "__main__":
     current_time = datetime.datetime.now()
     formatted_time = current_time.strftime("%Y年%m月%d日%H时%M分%S秒")
 
-    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_self_signed_{formatted_time}.pfx")
+    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_ca_signed_{formatted_time}.pfx")
 
     generate_ca_cert(cert_path)
