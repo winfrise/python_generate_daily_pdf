@@ -3,7 +3,7 @@ from spire.pdf import *
 import os
 import subprocess
 
-def validate_certificate(cert_path, password):
+def validate_certificate(cert_path, cert_password):
     """验证证书是否可读"""
     try:
         # 使用 openssl 验证
@@ -11,7 +11,7 @@ def validate_certificate(cert_path, password):
             "openssl", "pkcs12",
             "-in", cert_path,
             "-info", "-noout",
-            "-passin", f"pass:{password}"
+            "-passin", f"pass:{cert_password}"
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
         
@@ -25,35 +25,20 @@ def validate_certificate(cert_path, password):
         print(f"❌ 验证过程出错: {e}")
         return False
 
-def add_invisible_signature(input_path):
+def add_invisible_signature(input_path, output_path, cert_path, cert_password):
     try:
-        base_name, ext = os.path.splitext(input_path)
-        output_path = f"{base_name}_signed{ext}"
         
         # 1. 加载 PDF 文档
         pdf = PdfDocument()
         pdf.LoadFromFile(input_path)
         
-        # 2. 证书信息
-        cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/wechat3_signed_by_ca.pfx"
-        password = "123456"
         
         # 3. 验证证书
-        if not validate_certificate(cert_path, password):
-            print("⚠️  证书验证失败，尝试使用备用证书...")
-            # 尝试其他可能的证书路径
-            alt_paths = [
-                "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert.p12",
-                "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/certificate.p12",
-            ]
-            for alt in alt_paths:
-                if os.path.exists(alt) and validate_certificate(alt, password):
-                    cert_path = alt
-                    print(f"✅ 使用备用证书: {alt}")
-                    break
+        if not validate_certificate(cert_path, cert_password):
+            return
         
         # 4. 创建签名生成器
-        signatureMaker = PdfOrdinarySignatureMaker(pdf, cert_path, password)
+        signatureMaker = PdfOrdinarySignatureMaker(pdf, cert_path, cert_password)
         
         # 5. 设置签名元数据
         signature = signatureMaker.Signature
@@ -79,4 +64,10 @@ def add_invisible_signature(input_path):
 
 if __name__ == "__main__":
     input_path = "/Users/teacher/Downloads/百度网盘下载/水/生成的文件_page_seal.pdf"
-    add_invisible_signature(input_path)
+
+    base_name, ext = os.path.splitext(input_path)
+    output_path = f"{base_name}_signed{ext}"
+
+    cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert/cert_compatible_2026年06月18日10时11分50秒.pfx"
+    cert_password = "123456"
+    add_invisible_signature(input_path, output_path, cert_path, cert_password)
