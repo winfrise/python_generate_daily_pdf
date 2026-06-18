@@ -68,6 +68,6 @@ if __name__ == "__main__":
     base_name, ext = os.path.splitext(input_path)
     output_path = f"{base_name}_signed{ext}"
 
-    cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert/cert_compatible_2026年06月18日10时11分50秒.pfx"
+    cert_path = "/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert/cert_ca_signed.pfx"
     cert_password = "123456"
     add_invisible_signature(input_path, output_path, cert_path, cert_password)
