@@ -30,10 +30,10 @@ def generate_ca_cert(cert_info, cert_path):
 
     # 2. 构建根 CA 证书主体信息 (这就是以后显示的 "Issued by")
     ca_subject = ca_issuer = x509.Name([
-        # x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
-        # x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"Beijing"),
-        # x509.NameAttribute(NameOID.LOCALITY_NAME, u"Beijing"),
-        # x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Trusted Authority"), 
+        x509.NameAttribute(NameOID.COUNTRY_NAME, u"11"),
+        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"22"),
+        x509.NameAttribute(NameOID.LOCALITY_NAME, u"33"),
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"44"), 
         x509.NameAttribute(NameOID.COMMON_NAME, cert_info.get("issued_by")),
     ])
 
