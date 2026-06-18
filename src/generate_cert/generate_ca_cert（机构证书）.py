@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.serialization import pkcs12
 import os
 
 
-def generate_ca_cert(cert_path):
+def generate_ca_cert(cert_path, cert_info):
     # ==============================
     # 第一步：生成根 CA 证书 (颁发者)
     # 这个证书将作为 "Issued by" 的来源
@@ -25,7 +25,7 @@ def generate_ca_cert(cert_path):
         # x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"Beijing"),
         # x509.NameAttribute(NameOID.LOCALITY_NAME, u"Beijing"),
         # x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Trusted Authority"), 
-        x509.NameAttribute(NameOID.COMMON_NAME, u"这里是CA机构名称"),
+        x509.NameAttribute(NameOID.COMMON_NAME, cert_info.get("issued_by")),
     ])
 
     # 3. 创建自签名的根证书
@@ -58,7 +58,7 @@ def generate_ca_cert(cert_path):
     user_subject = x509.Name([
         x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"WeChat User Dept"),
-        x509.NameAttribute(NameOID.COMMON_NAME, u"微信3"), # <--- 这是签名者的名字
+        x509.NameAttribute(NameOID.COMMON_NAME, cert_info.get("issued_to")), # <--- 这是签名者的名字
     ])
 
     # 3. 创建由根 CA 签发的用户证书
@@ -103,6 +103,11 @@ if __name__ == "__main__":
     current_time = datetime.datetime.now()
     formatted_time = current_time.strftime("%Y年%m月%d日%H时%M分%S秒")
 
-    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_ca_signed_{formatted_time}.pfx")
+    cert_path = os.path.join(BASE_DIR, "../cert", f"cert_ca_signed.pfx")
 
-    generate_ca_cert(cert_path)
+    cert_info = {
+        "issued_to": "支付宝支付科技有限公司",
+        "issued_by": "天威诚信CA"
+    }
+
+    generate_ca_cert(cert_path, cert_info)

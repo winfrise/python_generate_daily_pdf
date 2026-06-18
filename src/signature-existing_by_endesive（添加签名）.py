@@ -13,7 +13,7 @@ from endesive.pdf import cms
 # logging.basicConfig(level=logging.DEBUG)
 
 
-def main():
+if __name__ == "__main__":
     date = datetime.datetime.utcnow() - datetime.timedelta(hours=12)
     date = date.strftime("D:%Y%m%d%H%M%S+00'00'")
     dct = {
@@ -24,7 +24,7 @@ def main():
         "sigpage": 0,
         "signform": True,
         "sigfield": "Signature",
-        "reason": "这里是描述",
+        "reason": "电子合同签约",
         "password": "1234",
     }
     with open("/Users/teacher/Desktop/pdf_command/python_generate_daily_pdf/cert/cert_ca_signed.pfx", "rb") as fp:
@@ -41,5 +41,3 @@ def main():
         fp.write(datau)
         fp.write(datas)
 
-
-main()
