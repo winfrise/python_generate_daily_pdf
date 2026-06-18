@@ -1,5 +1,5 @@
 from PIL import Image
-from config import STAMP_PATH
+from config import STAMP_PATH, FONT_PATH
 import fitz  # PyMuPDF
 from PIL import Image
 import os
@@ -122,37 +122,31 @@ def add_cross_page_seal(input_path, seal_path, add_list):
 
         if 'page' in add_list:
             # ========== B. 添加底部居中页码 ==========
-            # 页码配置
-            PAGE_NUM_FONT_SIZE = 10   # 页码字体大小 (pt)
-            PAGE_NUM_MARGIN_BOTTOM = 30 # 页码距离底部的边距 (pt)
-            PAGE_NUM_TEXT_COLOR = (0, 0, 0)    # 页码颜色：黑色
-            PAGE_NUM_FONT_NAME="Simum"
+
+            # 1. 加载宋体字体
+            SimSun_FONT = fitz.Font(fontfile=FONT_PATH, fontname="simsun")
+            simsum_insert_font = page.insert_font(fontfile=FONT_PATH, fontname="SimSun")
 
             text = f"第 {page_num} 页，共 {total_pages} 页"
-            # x 轴：页面宽度 / 2 实现水平居中
-            # y 轴：页面高度 - 底部边距 实现底部对齐
-            insert_point = fitz.Point(page_w / 2, page_h - PAGE_NUM_MARGIN_BOTTOM)
-            
-            width = page.rect.width
-            height = page.rect.height
+            fontsize = 10
 
-            text_width = fitz.get_text_length(
-                text,
-                # fontname=PAGE_NUM_FONT_NAME,
-                fontsize=PAGE_NUM_FONT_SIZE
-            )
+            # 2. 计算文本宽度
+            # text_width = fitz.get_text_length(text, fontname="宋体", fontsize=fontsize)
+            # 或者用 Font 对象的方法（更准确）
+            text_width = SimSun_FONT.text_length(text, fontsize=fontsize)
 
-            # 计算居中坐标
-            x = (width - text_width) / 2
-            y = height - PAGE_NUM_MARGIN_BOTTOM
+            # 3. 获取页面宽度，计算居中位置
+            x_center = (page_w - text_width) / 2  # 水平居中起始 X 坐标
+            y = 10  # 垂直位置，可以自己调整
+
 
             # 插入文本 (不再使用 align 参数)
             page.insert_text(
-                (x, y),
+                (x_center, y),
                 text,
-                # fontname=FONT_NAME,
-                fontsize=PAGE_NUM_FONT_SIZE,
-                color=PAGE_NUM_TEXT_COLOR
+                fontname="simsun",  
+                fontsize=fontsize,
+                color=(0, 0, 0)
             )
 
 
