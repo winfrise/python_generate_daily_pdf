@@ -21,11 +21,11 @@ def generate_ca_cert(cert_path):
 
     # 2. 构建根 CA 证书主体信息 (这就是以后显示的 "Issued by")
     ca_subject = ca_issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
-        x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"Beijing"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, u"Beijing"),
-        x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Trusted Authority"), # <--- 这里改成你想要的颁发机构名称
-        x509.NameAttribute(NameOID.COMMON_NAME, u"My Trusted Authority Root CA"),
+        # x509.NameAttribute(NameOID.COUNTRY_NAME, u"CN"),
+        # x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, u"Beijing"),
+        # x509.NameAttribute(NameOID.LOCALITY_NAME, u"Beijing"),
+        # x509.NameAttribute(NameOID.ORGANIZATION_NAME, u"My Trusted Authority"), 
+        x509.NameAttribute(NameOID.COMMON_NAME, u"这里是CA机构名称"),
     ])
 
     # 3. 创建自签名的根证书
@@ -95,7 +95,6 @@ def generate_ca_cert(cert_path):
         f.write(pfx_data)
 
     print(">>> 成功生成 wechat3_signed_by_ca.pfx")
-    print(">>> 请使用此文件进行 PDF 签名，'Issued by' 将会显示为 'My Trusted Authority'")
 
 
 if __name__ == "__main__":
