@@ -128,7 +128,7 @@ def add_cross_page_seal(input_path, seal_path, add_list):
             SimSun_FONT = fitz.Font(fontfile=FONT_PATH, fontname="SimSun")
 
             text = f"第 {page_num} 页，共 {total_pages} 页"
-            fontsize = 10
+            fontsize = 8
 
             # 2. 计算文本宽度
             # text_width = fitz.get_text_length(text, fontname="宋体", fontsize=fontsize)
@@ -136,13 +136,13 @@ def add_cross_page_seal(input_path, seal_path, add_list):
             text_width = SimSun_FONT.text_length(text, fontsize=fontsize)
 
             # 3. 获取页面宽度，计算居中位置
-            x_center = (page_w - text_width) / 2  # 水平居中起始 X 坐标
-            y = 10  # 垂直位置，可以自己调整
+            position_x_center = (page_w - text_width) / 2  # 水平居中起始 X 坐标
+            position_y = page_h - 10  # 垂直位置，可以自己调整
 
 
             # 插入文本 (不再使用 align 参数)
             page.insert_text(
-                (x_center, y),
+                (position_x_center, position_y),
                 text,
                 fontname="SimSun", 
                 fontsize=fontsize,
@@ -150,9 +150,12 @@ def add_cross_page_seal(input_path, seal_path, add_list):
             )
 
 
+    # 3. 子集化字体（只保留用到的字符）
+    doc.subset_fonts()
 
-    # 保存结果
-    doc.save(output_path)
+    # 4. 保存并压缩
+    doc.ez_save(output_path)
+
     doc.close()
     print(f"处理完成，文件已保存至: {output_path}")
 
