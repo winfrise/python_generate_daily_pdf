@@ -115,7 +115,7 @@ def add_cert_sign(input_path, output_path, cert_info, cert_path):
     dct = {
         "signingdate": date,
         "aligned": 0,
-        "sigflags": 3,
+        "sigflags": 3,  # 签名标志，3表示文档签名后不允许修
         "sigflagsft": 132,
         "sigpage": 0,
         "signform": True,
