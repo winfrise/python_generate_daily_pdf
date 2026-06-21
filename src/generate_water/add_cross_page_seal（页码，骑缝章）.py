@@ -1,7 +1,6 @@
 from PIL import Image
 from config import STAMP_PATH, FONT_PATH
 import fitz  # PyMuPDF
-from PIL import Image
 import os
 
 
